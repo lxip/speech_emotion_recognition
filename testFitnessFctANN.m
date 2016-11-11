@@ -1,5 +1,8 @@
 % Testing different fitness functions
 
+global data
+global emotions_raw
+
 clearvars -except k errors
 
 load('featuresGerman.mat')
@@ -27,29 +30,33 @@ for i = 1:length(data_raw)
     
 end
 
-% Split data into training (80%) and testing (20%) sets.
+error = zeros(10,length(emotions_raw)); % preallocating for error variable
+genes = eye(length(emotions_raw));
 
-rng(1)
+% Average over 10 repetitions
+for i = 1:10
+    % Split data into training (80%) and testing (20%) sets.
 
-mask = rand(length(data_raw),1) < 0.8;
+    mask = rand(length(data_raw),1) < 0.8;
 
-traindata = data(mask,:);
-testdata = data(~mask,:);
+    traindata = data(mask,:);
+    testdata = data(~mask,:);
 
-trainclasses = emotions_raw(mask);
-testclasses = emotions_raw(~mask);
+    trainclasses = emotions_raw(mask);
+    testclasses = emotions_raw(~mask);
 
-% Run the ANN using a single statistical descriptor of a single feature (X10)
+    % Run the ANN using a single statistical descriptor of a single feature (X10)
 
-error = zeros(10,length(emotions_raw));
-
-for j = 1:10
-    for i = 1:length(emotions_raw)
-        genes = zeros(1,length(emotions_raw));
-        genes(i) = 1;
-        error(j,i)=fitnessCounterPropANN(genes,traindata,trainclasses,testdata,testclasses);
-    end
+    error(i,:) = fitnessCounterPropANN(genes,traindata,trainclasses,testdata,testclasses)';
 end
+
+% % for j = 1:10
+% %     for i = 1:length(emotions_raw)
+% %         genes = zeros(1,length(emotions_raw));
+% %         genes(i) = 1;
+% %         error(j,i)=fitnessCounterPropANN(genes,traindata,trainclasses,testdata,testclasses);
+% %     end
+% % end
 
 % Plot the results
 
