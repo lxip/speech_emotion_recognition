@@ -30,11 +30,11 @@ for i = 1:length(data_raw)
     
 end
 
-error = zeros(10,length(emotions_raw)); % preallocating for error variable
-genes = eye(length(emotions_raw));
+error = zeros(10,numfeatures*numstats); % preallocating for error variable
+genes = eye(numfeatures*numstats);
 
 % Average over 10 repetitions
-for i = 1:10
+for i = 1:2
     % Split data into training (80%) and testing (20%) sets.
 
     mask = rand(length(data_raw),1) < 0.8;
