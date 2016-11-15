@@ -2,6 +2,7 @@
 
 global data
 global emotions_raw
+global genders
 
 clearvars -except k errors
 
@@ -15,6 +16,9 @@ emo2 = 'F'; %happiness
 emotions = [featuresALL.emotion]';
 data_raw = featuresALL(emotions == emo1 | emotions == emo2);
 emotions_raw = [data_raw.emotion]';
+
+genders = [featuresALL.gender]'; % GENDER
+data_raw = featuresALL; % GENDER
 
 % Set up the data matrix
 numfeatures = 35;
@@ -30,11 +34,12 @@ for i = 1:length(data_raw)
     
 end
 
-error = zeros(10,numfeatures*numstats); % preallocating for error variable
+nreps = 2;
+error = zeros(nreps,numfeatures*numstats); % preallocating for error variable
 genes = eye(numfeatures*numstats);
 
 % Average over 10 repetitions
-for i = 1:2
+for i = 1:nreps
     % Split data into training (80%) and testing (20%) sets.
 
     mask = rand(length(data_raw),1) < 0.8;
@@ -42,9 +47,12 @@ for i = 1:2
     traindata = data(mask,:);
     testdata = data(~mask,:);
 
-    trainclasses = emotions_raw(mask);
-    testclasses = emotions_raw(~mask);
-
+    trainclasses = genders(mask); % GENDER - changed from emotions_raw
+    testclasses = genders(~mask); % GENDER - changed from emotions_raw
+    
+    trainclasses = trainclasses == 'f';
+    testclasses = testclasses == 'f';
+    
     % Run the ANN using a single statistical descriptor of a single feature (X10)
 
     error(i,:) = fitnessCounterPropANN(genes,traindata,trainclasses,testdata,testclasses)';
