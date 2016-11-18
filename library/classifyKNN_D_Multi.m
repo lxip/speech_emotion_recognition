@@ -19,7 +19,7 @@ function [Ps, winnerClass] = classifyKNN_D_Multi(F, testSample, k, NORMALIZE, us
 % - Ps: an array that contains the classification probabilities for each class
 % - winnerClass: the label of the winner class
 
-error( nargchk(4,5,nargin) )
+narginchk(4,5); 
 
 if ( nargin < 5 )
     useL1distance = false;
