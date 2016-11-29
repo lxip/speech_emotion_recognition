@@ -56,11 +56,18 @@ clearvars i j;
 % end
 % set(gca,'XTick',iter)
 % set(gca,'xscale','log')
-% xlabel(['feature # for emotion ',emoPick(1),' and ',emoPick(2)])
+% xlabel('10 iteration options for 6 pair of emotions')
 % ylabel('accuracy')
 % legend('Ac for G-normalization','Ac for RW-normalization')
 % title('KNN: different iteration for choosen 6 emotions classification result (shown in different colors)')
-
+% 
+% % Chosen emotions for the fig:
+% % Emotion W and L are picked.
+% % Emotion F and E are picked.
+% % Emotion A and W are picked.
+% % Emotion E and W are picked.
+% % Emotion F and E are picked.
+% % Emotion E and T are picked.
 
 %% Experiment 2
 % the classification result for each feature, KNN working or not
