@@ -34,4 +34,4 @@ for i = 1:length(listing)
     end
 end
 
-save('featuresGerman.mat','featuresALL')
+save('featuresGerman_addFeature.mat','featuresALL')
