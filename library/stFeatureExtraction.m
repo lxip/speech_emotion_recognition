@@ -68,7 +68,7 @@ for i=1:numOfFrames % for each frame
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%% add two new features: logEnergy and Teo (for continueous variable)
         Features(36,i) = feature_logEnergy(frame);
-        Features(37,i) = sum(feature_teo(frame));
+        Features(37,i) = feature_teo(frame);
     else
         Features(:,i) = zeros(numOfFeatures, 1);
     end    
