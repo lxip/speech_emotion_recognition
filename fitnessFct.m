@@ -11,8 +11,8 @@ testdata = data(~mask,:);
 trainclasses = emotions_raw(mask);
 testclasses = emotions_raw(~mask);
 
-trainclasses = trainclasses == 'F';
-testclasses = testclasses == 'F';
+% trainclasses = trainclasses == 'F';
+% testclasses = testclasses == 'F';
 
 fitness = fitnessCounterPropANN(pop,traindata,trainclasses,testdata,testclasses)';
 

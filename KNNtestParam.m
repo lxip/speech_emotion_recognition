@@ -1,9 +1,9 @@
 % A drive for running KNN classifier in the library.
-% And plot for showing the functionality on selected emotions.
+% And plot for showing the result for different KNN k parameter.
 % Creator: Xipei Liu
 % Last Edited: 2016-12-02
 
-%% prepare emotion data
+
 clc;
 clear all;
 load('featuresGerman37.mat')
@@ -19,6 +19,7 @@ load('featuresGerman37.mat')
 %     featureData{i} = zeros(numfeatures*numstats, length(feature_emo{i}));
 % end
 
+%% prepare emotion data
 emos = unique([featuresALL.emotion])'; % All unique emotions
 emotions = [featuresALL.emotion]';
 numfeatures = size([featuresALL.features],1); 
@@ -33,6 +34,7 @@ for i = 1:length(emoPick)
     featureData{i} = zeros(numfeatures*numstats, length(feature_emo{i}));
 end
 
+%%%% shared code for gender and emotion
 for i = 1:length(featureData)
    for j = 1:size(featureData{i},2)
        featureData{i}((1:numfeatures)*numstats-(numstats-1),j) = mean  (feature_emo{i}(j).features,2)';

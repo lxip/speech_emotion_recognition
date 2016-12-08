@@ -16,5 +16,5 @@ for i = 1:size(pop,1)
                     evaluateClassifier(featuresSUB, 2, 1, [0.8,35]);
                 
     %%%% calculating fitness    
-    fitness(i) = 1-Ac2; % fitness based on general accuracy
+    fitness(i) = 1-sum(F11+F12)/4; % fitness based on precision and recall
 end

@@ -1,5 +1,7 @@
 % A drive for running KNN classifier in the library.
-% And plot for showing the functionality on selected emotions.
+% Made to permutaion tests: get KNN score on every single feature
+% Also do the permutation test for difference between two accuracy 
+    %Ac1 Ac2 in the KNN result
 % Creator: Xipei Liu
 % Last Edited: 2016-11-18
 clc;
@@ -13,7 +15,8 @@ emotions = [featuresALL.emotion]';
 numfeatures = size([featuresALL.features],1); 
 numstats = 5; % mean,median,std,min,max
 
-emoPick = datasample(emos',2,'Replace',false); 
+% emoPick = datasample(emos',2,'Replace',false);
+emoPick = 'WE';
 disp(['Emotion ',emoPick(1), ' and ',emoPick(2),' are picked.']);
 
 
@@ -35,32 +38,39 @@ clearvars i j;
 
 %% Experiment 
 % the classification result for each feature, KNN working or not, unsorted
-nreps = 2;
+nreps = 1;% no need for extra rep
 accus1 = zeros(nreps, numfeatures*numstats);
 accus2 = zeros(nreps, numfeatures*numstats);
 for n = 1:nreps
     for j = 1:numfeatures*numstats
         for i = 1:length(featureData)
             featureSelect{i} = zeros(numfeatures*numstats, length(feature_emo{i}));
-            featureSelect{i}(j,:) = featureData{i}(j,:);
+            featureSelect{i}(j,:) = featureData{i}(j,:);%commend out this line for accuracy test
         end
         [CM1, Ac1, Pr1, Re1, F11, CM2, Ac2, Pr2, Re2, F12] = ...
-                evaluateClassifier(featureSelect, 10, 1, [0.8,20]);
-        % repeat 20 times for each classification, 80%training 20%testing
+                evaluateClassifier(featureSelect, 2, 1, [0.8,35]);
+        % repeat 35 times for each classification, .8 training .2 testing
+        % randomly assign in each generation
+        % 2 nearest neighbor used
         accus1(n,j) = Ac1;
         accus2(n,j) = Ac2;
     end
 end
+
+%%
 %%%
 figure('units','normalized','position',[.1 .1 .8 .4])
 hold on
-plot(mean(accus1),'-*')
-plot(mean(accus2),'-^')
+% plot(mean(accus1),'-*')
+% plot(mean(accus2),'-^')
+plot(accus1,'-*')
+plot(accus2,'-^')
 set(gca,'XTick',linspace(0,190,6))
-xlabel(['feature # for emotion ',emoPick(1),' and ',emoPick(2)])
+set(gca,'ylim',[0.4,1])
+xlabel('repetition')
 ylabel('accuracy')
 legend('Ac for G-normalization','Ac for RW-normalization')
-title('KNN: single feature classification result for selected emotions')
+title(['KNN: accuracy difference with zero feature turned on. Choose emotion ',emoPick(1),' and ',emoPick(2)'])
       
 
 

@@ -24,8 +24,8 @@ children = zeros((size(parents,1)*size(parents,2))/2,P);
 
 for i = 1:size(children,1)
     %child = zeros(1,P);
-    p1 = thisPopulation(parents(i),:);
-    p2 = thisPopulation(parents(i+1),:);
+    p1 = thisPopulation(parents(2*i),:);
+    p2 = thisPopulation(parents(2*i-1),:);
 
     if rand < 0.95
         child = p1 & p2;
@@ -39,5 +39,5 @@ for i = 1:size(children,1)
     children(i,:) = child;
     
 end
-
+% keyboard
 end

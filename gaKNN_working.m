@@ -1,21 +1,25 @@
-% scrappaper
+% gaKNN.m
+% This driver executes the GA to produce a 
 
-load('featuresGerman.mat')
+load('featuresGerman.mat'); % load data
 
 global featureData % declare global so the fitness fct can see it
 
-%%%%%%%%%%% Code to re-use when classifying by emotion (not gender) %%%%%%%
+% %%%%%%%%%% Code to re-use when classifying by emotion (not gender) %%%%%%%
 % emos = unique([featuresALL.emotion])'; % All emotions
 % speakers = unique([featuresALL.speaker])'; % All speakers
-% Pick out 2 emotions
-% emo1 = 'W'; %anger
-% emo2 = 'F'; %happiness
-% select out just those 2 emotions
+% % Pick out 2 emotions
+% emo1 = 'E'; %anger
+% emo2 = 'L'; %happiness
+% % select out just those 2 emotions
 % emotions = [featuresALL.emotion]';
 % data_emo1 = featuresALL(emotions == emo1);
 % data_emo2 = featuresALL(emotions == emo2);
+% 
+% data_1 = data_emo1;
+% data_2 = data_emo2;
 
-
+% %%%%%%%%%% Code to re-use when classifying by gender (not emotion) %%%%%%%
 gender = [featuresALL.gender]'; % gender info for all recordings
 
 % seleect by gender
@@ -25,6 +29,7 @@ data_f = featuresALL(gender == 'f');
 % Relabeling to a more generic form
 data_1 = data_m;
 data_2 = data_f;
+
 
 %%
 % Set up the data matrix
@@ -52,18 +57,24 @@ end
 
 clearvars i j;
 
+% % feat = getExtraneousFeatures(featuresALL);
+% % 
+% % notExt = ~ismember(1:175,feat);
+% % 
+% % featureData = {featureData_emo1(:,notExt)',featureData_emo2(:,notExt)'};
+
 featureData = {featureData_emo1',featureData_emo2'};
 
 %% GA stuff
 
 % GA INPUT VARIABLES
 P = 50; % population size
-N = numfeatures*numstats; % genome size
-R = 3/(numfeatures*numstats); % initialization rate
-crossoverFrac = 0.5;
+N = 175; % genome size
+R = .1; % initialization rate
+crossoverFrac = 0.8;
 eliteCt = 1;
 fitnessLim = 0;
-maxGens = 10;
+maxGens = 300;
 mutationRate = 0.01;
 
 pop = createPop(P, N, R); % Create initial population
@@ -87,3 +98,35 @@ audioOptions.InitialPopulation = pop;
 tic();
 [x, fval, exitflag] = ga(@fitnessFctKNN, N, audioOptions);
 toc()
+
+history = gaoutputfcn;
+plot(1-history.BestScore,'*-')
+xlabel('generation')
+ylabel('Accuracy')
+title({['KNN classifier w/ initial pop. ' num2str(P) ', ' ...
+    num2str(maxGens) ' generations'] ['elitism=' num2str(eliteCt) ...
+    ', initializaiton rate ' num2str(R)]})
+
+%%
+nngens = size(history.popALL,3);
+temp = zeros(nngens,185);
+for i = 1:nngens
+    popi = history.popALL(:,:,i);
+    temp(i,:) = sum(popi) ./ size(popi,1);
+end
+
+figure
+heatmap(temp',[],1:nngens',[],'Colormap','hot','Colorbar',true,'UseLogColormap','true');
+%colormap(flipud(colormap))
+xlabel('feature')
+ylabel('generation')
+title('Frequency of feature appearance in each generation of the GA')
+
+temp2 = history.BestIndividual;
+figure
+imagesc(temp2)
+xlabel('feature')
+ylabel('generation')
+title('Best individuals during each generation by feature')
+
+gaPlots

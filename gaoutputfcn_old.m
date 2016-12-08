@@ -71,19 +71,16 @@ if nargin>0 % if called from GA toolbox (i.e., with input arguments)
     switch flag
         case 'init'
             history=[]; %erase history from previous run, if any exists
-            history.popALL = zeros(size(state.Population,1),size(state.Population,2),options.Generations);
         
         case 'iter'
             % save statistics for the current generation
-            [history.BestScore(state.Generation), BestIndex] = min(state.Score); %best fitness
-            history.BestIndividual(state.Generation,:) = state.Population(BestIndex,:);%best guy
-            [history.WorstScore(state.Generation), WorstIndex] = max(state.Score);%worst fitness
-            history.WorstIndividual(state.Generation,:) = state.Population(WorstIndex,:);%worst guy
-            history.AvgScore(state.Generation) = mean(state.Score);% average fitness
-            history.StandardDev(state.Generation) = std(state.Score);% standard deviation of fitness
-            history.AllScores(:,state.Generation) = state.Score;
-            history.popALL(:,:,state.Generation) = state.Population;
-            %history.Diversity(state.Generation) = mean(pdist(state.Population,'hamming'))./0.5;
+           [history.BestScore(state.Generation), BestIndex]   = min(state.Score);% best fitness
+            history.BestIndividual(state.Generation,:)        = state.Population(BestIndex,:);% best guy
+           [history.WorstScore(state.Generation), WorstIndex] = max(state.Score); % worst fitness
+            history.WorstIndividual(state.Generation,:)       = state.Population(WorstIndex,:);% worst guy
+            history.AvgScore(state.Generation)                = mean(state.Score);% average fitness
+            history.StandardDev(state.Generation)             = std(state.Score);% standard deviation of fitness
+            history.AllScores(:,state.Generation)             = state.Score;% all scores over pop and generation
             
             %%Distance calculations
             samples=20; % randomly select 20 pairs of individuals to compare

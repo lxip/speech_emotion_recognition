@@ -1,4 +1,4 @@
-function fitness = fitnessFctKNN(pop)
+function fitness = KNNfitness(pop)
 
 global featureData
 
@@ -16,5 +16,6 @@ for i = 1:size(pop,1)
                     evaluateClassifier(featuresSUB, 2, 1, [0.8,35]);
                 
     %%%% calculating fitness    
-    fitness(i) = 1-Ac2; % fitness based on general accuracy
+%     fitness(i) = 1-(Re1+Re2).*(Pr1+Pr2)/(Pr1+Pr2+Re1+Re2); % fitness based on the formula from book
+%     fitness(i) = 1-(Ac1+Ac2)/2; % fitness based on accuracy
 end

@@ -16,24 +16,36 @@ emotions = [featuresALL.emotion]';     % emotion info for all recordings
 emos = unique([featuresALL.emotion])'; % All unique emotions
 emos_comb = nchoosek(emos, 2);         % all possible combinations of emotions in pair
 
-emoPick = 'AF';   % temporarily just random pick a combo of emotions
-disp(['Emotion ',emoPick(1), ' and ',emoPick(2),' are picked for this run.']);
+classPick = 'WF';% temporarily just random pick a combo of emotions 
+disp(['Emotion ',classPick(1),' and ',classPick(2),' are picked for this run.']);
+% classPick = datasample(emos',3,'Replace',false);% choose 3 emotions to classify
+% disp(['Emotion ',classPick(1),',',classPick(2),' and ',classPick(3),' are picked for this run.']);
 
+    %%%%%%%%%% Normal run for 2 picked emotion %%%%%%%
+    for i = 1:length(classPick)
+        featurePicked{i} = featuresALL(emotions==classPick(i));
+        featureData{i} = zeros(numfeatures*numstats, length(featurePicked{i}));
+    end
 
-for i = 1:length(emoPick)
-    feature_emo{i} = featuresALL(emotions==emoPick(i));
-    featureData{i} = zeros(numfeatures*numstats, length(feature_emo{i}));
-end
+%         %%%%%%%%%% Permutation test for 2 picked emotion %%%%%%%
+%         for i = 1:length(classPick)
+%             featureLength(i) = size(featuresALL(emotions==classPick(i)),2);
+%             featureData{i} = zeros(numfeatures*numstats, featureLength(i));
+%         end
+% 
+%         featureChoose = featuresALL(find(ismember(emotions,classPick)));
+%         featureChoose_shuffle = featureChoose(randperm(length(featureChoose)));
+% 
+%         featurePicked{1} = featureChoose_shuffle(1:featureLength(1));
+%         featurePicked{2} = featureChoose_shuffle(featureLength(1)+1:end);
 
-
-
+    
 % %%%%%%%%%% Code to re-use when classifying by gender (not emotion) %%%%%%%
 % gender = [featuresALL.gender]'; % gender info for all recordings
-% genderPick = unique(gender);
-% 
-% for i = 1:length(genderPick)
-%     feature_gender{i} = featuresALL(gender==genderPick(i));
-%     featureData{i} = zeros(numfeatures*numstats, length(feature_gender{i}));
+% classPick = unique(gender);
+% for i = 1:length(classPick)
+%     featurePicked{i} = featuresALL(gender==classPick(i));
+%     featureData{i} = zeros(numfeatures*numstats, length(featurePicked{i}));
 % end
 
 
@@ -42,11 +54,11 @@ end
 %%% Set up the data matrix 
 for i = 1:length(featureData)
    for j = 1:size(featureData{i},2)
-       featureData{i}((1:numfeatures)*numstats-(numstats-1),j) = mean  (feature_emo{i}(j).features,2)';
-       featureData{i}((1:numfeatures)*numstats-(numstats-2),j) = median(feature_emo{i}(j).features,2)';
-       featureData{i}((1:numfeatures)*numstats-(numstats-3),j) = std   (feature_emo{i}(j).features,0,2)';
-       featureData{i}((1:numfeatures)*numstats-(numstats-4),j) = min   (feature_emo{i}(j).features,[],2)';
-       featureData{i}((1:numfeatures)*numstats-(numstats-5),j) = max   (feature_emo{i}(j).features,[],2)';
+       featureData{i}((1:numfeatures)*numstats-(numstats-1),j) = mean  (featurePicked{i}(j).features,2)';
+       featureData{i}((1:numfeatures)*numstats-(numstats-2),j) = median(featurePicked{i}(j).features,2)';
+       featureData{i}((1:numfeatures)*numstats-(numstats-3),j) = std   (featurePicked{i}(j).features,0,2)';
+       featureData{i}((1:numfeatures)*numstats-(numstats-4),j) = min   (featurePicked{i}(j).features,[],2)';
+       featureData{i}((1:numfeatures)*numstats-(numstats-5),j) = max   (featurePicked{i}(j).features,[],2)';
    end
 end
 clearvars i j;
@@ -67,7 +79,7 @@ fitnessLim = 0;
 crossoverFrac = 0.8;  % using inter/union crossover
 mutationRate  = 0.01; % using bit-flip mutation
 
-%%% VARIABLE setting in KNN classifier: k = 2, iteration = 35 (hard coded in fitness fct)
+%%% VARIABLE setting in KNN classifier: k = 2, iteration = 35 (hard coded in fitnessFctKNN.m)
 
 population = KNNpopInit(P, N, R); % Initialize population
 
@@ -84,61 +96,14 @@ audioOptions = gaoptimset(  'CreationFcn',    @KNNpopInit, ...
                             'Vectorized',     'on',...
                             'OutputFcns',     @gaoutputfcn);
                          
-audioOptions.InitialPopulation = population;
+audioOptions.InitialPopulation = population; 
         
 % Run GA
 tic();
 [x, fval, exitflag] = ga(@fitnessFctKNN, N, audioOptions);
 elp = toc();
 
+% Save history
 history = gaoutputfcn;
-
-%%
-% process GA results
-EL_Ac = load('GAhist_pop50gen300elit1initrate010_EL_Ac_964s.mat');
-EL_Ac = EL_Ac.history;
-EL_Fc = load('GAhist_pop50gen300elit1initrate010_EL_Fc_398s.mat');
-EL_Fc = EL_Fc.history;
-
-EF_Ac = load('GAhist_pop50gen300elit1initrate010_EF_Ac_549s.mat');
-EF_Ac = EF_Ac.history;
-EF_Fc = load('GAhist_pop50gen300elit1initrate010_EF_Fc_1053s.mat');
-EF_Fc = EF_Fc.history;
-
-LE_Ac = load('GAhist_pop50gen300elit1initrate010_LE_Ac_562s.mat');
-LE_Ac = LE_Ac.history;
-LE_Fc = load('GAhist_pop50gen300elit1initrate010_LE_Fc_1006s.mat');
-LE_Fc = LE_Fc.history;
-
-figure('units','normalized','position',[.1 .1 .6 .9])
-
-subplot(3,1,1)
-hold on;
-plot(1-EL_Ac.BestScore,'*-')
-plot(1-EL_Fc.BestScore,'o-')
-legend('fitness use accuracy','fitness from book','Location','southeast')
-xlabel('generation, Emotion E and L')
-ylabel('BestScore')
-
-   
-subplot(3,1,3)
-hold on;
-plot(1-EF_Ac.BestScore,'*-')
-plot(1-EF_Fc.BestScore,'o-')
-legend('fitness use accuracy','fitness from book','Location','southeast')
-xlabel('generation, Emotion E and F')
-ylabel('BestScore')
-
-
-subplot(3,1,2)
-hold on;
-plot(1-LE_Ac.BestScore,'*-')
-plot(1-LE_Fc.BestScore,'o-')
-legend('fitness use accuracy','fitness from book','Location','southeast')
-xlabel('generation, Emotion L and E')
-ylabel('BestScore')
-
-
-supertitle({['KNN classifier k=2 iteration=35,']
-       [' with initial pop=' num2str(P) ', max generations=' num2str(maxGens)...
-       ' elitism=' num2str(eliteCt) ', initializaiton rate=' num2str(R)]})
+history.emotions = classPick;
+save(['./history/history',classPick,'rerun.mat'],'history')

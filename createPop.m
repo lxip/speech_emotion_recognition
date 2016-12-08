@@ -6,12 +6,8 @@ function pop = createPop(P, N, R)
 % number of queens N and return a P × N matrix, where each row is a permutation 
 % of N numbers); hint: see randperm
 
-pop = zeros(P,N);
 
-for i = 1:P
-    
-    pop(i,:) = rand(1,N) < R;
-end
+pop = rand(P,N) < R;
 
 end
 
